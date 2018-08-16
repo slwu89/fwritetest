@@ -2,3 +2,6 @@
 
 export(Mean_Quantiles)
 export(Split_Aggregate)
+import(Rcpp)
+import(RcppArmadillo)
+useDynLib(fwritetest)
