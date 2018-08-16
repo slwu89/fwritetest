@@ -25,6 +25,8 @@
 #endif
 
 #define STOP error
+#define STRICT_R_HEADERS
+#define USE_RINTERNALS
 
 //#include "fwrite.h"
 #include <stdint.h>
