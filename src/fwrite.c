@@ -24,6 +24,8 @@
 #define CLOSE close
 #endif
 
+#define STOP error
+
 //#include "fwrite.h"
 #include <stdint.h>
 
@@ -393,13 +395,13 @@ SEXP fwriteMain(SEXP MAT,   //matrix test
   // Cold section as only 1,000 rows. Speed not an issue issue here.
   // Overestimating line length is ok.
   int eolLen = strlen(EOL);
-  if (eolLen<=0) error("eol must be 1 or more bytes (usually either \\n or \\r\\n) but is length %d", eolLen);
+  if (eolLen<=0) STOP("eol must be 1 or more bytes (usually either \\n or \\r\\n) but is length %d", eolLen);
   
   //  int buffMB = args.buffMB;
-  if (buffMB<1 || buffMB>1024) error("buffMB=%d outside [1,1024]", buffMB);
+  if (buffMB<1 || buffMB>1024) STOP("buffMB=%d outside [1,1024]", buffMB);
   size_t buffSize = (size_t)1024*1024*buffMB;
   char *buff = malloc(buffSize);
-  if (!buff) error("Unable to allocate %dMB for line length estimation: %s", buffMB, strerror(errno));
+  if (!buff) STOP("Unable to allocate %dMB for line length estimation: %s", buffMB, strerror(errno));
   
   
   int maxLineLen = 0;
@@ -433,7 +435,7 @@ SEXP fwriteMain(SEXP MAT,   //matrix test
   
   if (f == -1) {
     int erropen = errno;
-    error(access( FILENAME, F_OK ) != -1 ?
+    STOP(access( FILENAME, F_OK ) != -1 ?
            "%s: '%s'. Failed to open existing file for writing. Do you have write permission to it? Is this Windows and does another process such as Excel have it open?" :
            "%s: '%s'. Unable to create new file for writing (it does not exist already). Do you have permission to write here, is there space on the disk and does the path exist?",
            strerror(erropen), FILENAME);
