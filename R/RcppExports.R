@@ -2,8 +2,13 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-Split_Aggregate <- function(maleFile, femaleFile, eol, maleMat, femaleMat) {
-    invisible(.Call('_fwritetest_Split_Aggregate', PACKAGE = 'fwritetest', maleFile, femaleFile, eol, maleMat, femaleMat))
+testRead <- function(fileName, simTime, numPatch, genotypes) {
+    .Call('_fwritetest_testRead', PACKAGE = 'fwritetest', fileName, simTime, numPatch, genotypes)
+}
+
+#' @export
+Split_Aggregate <- function(maleFile, femaleFile, simTime, numPatch, genotypes) {
+    invisible(.Call('_fwritetest_Split_Aggregate', PACKAGE = 'fwritetest', maleFile, femaleFile, simTime, numPatch, genotypes))
 }
 
 #' @export
@@ -25,14 +30,5 @@ rcpparma_innerproduct <- function(x) {
 
 rcpparma_bothproducts <- function(x) {
     .Call('_fwritetest_rcpparma_bothproducts', PACKAGE = 'fwritetest', x)
-}
-
-timesTwo <- function(x) {
-    .Call('_fwritetest_timesTwo', PACKAGE = 'fwritetest', x)
-}
-
-#' @export
-testRead <- function(fileName) {
-    invisible(.Call('_fwritetest_testRead', PACKAGE = 'fwritetest', fileName))
 }
 

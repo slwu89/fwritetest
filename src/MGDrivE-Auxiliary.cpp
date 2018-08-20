@@ -1,3 +1,12 @@
+
+
+
+
+
+
+
+
+#include "MGDReader.h"
 #include <RcppArmadillo.h>
 using namespace Rcpp;
 //[[Rcpp::depends(RcppArmadillo)]]
@@ -12,105 +21,218 @@ extern "C" SEXP fwriteMain(SEXP MAT,   //matrix test
                           SEXP buffMB_Arg); // [1-1024] default 8MB
 
 
+
+
+
+
+
+
 //' @export
 // [[Rcpp::export]]
-void Split_Aggregate(String& maleFile, String& femaleFile, String eol,
-                     NumericMatrix& maleMat, NumericMatrix& femaleMat){
+Rcpp::NumericMatrix testRead(const std::string& fileName, const int& simTime, const int& numPatch,
+                             const Rcpp::CharacterVector& genotypes){
   
-  // Rcpp::Rcout << "I'm in" << std::endl;
-  // 
-  // IntegerVector intPatches(maleMat(_,1).begin(), maleMat(_,1).end());
-  // IntegerVector uniquePatches = unique(intPatches);
-  // int totalTime = maleMat.nrow();
-  // int totalPatch = uniquePatches.length();
-  // 
-  // std::sort(uniquePatches.begin(), uniquePatches.end());
-  // 
-  // Rcpp::Rcout << "I got unique patches" << std::endl;
-  // 
-  // String patchName;
-  // std::string new_string;
-  // int patchTime = totalTime/totalPatch;
-  // NumericMatrix hold(patchTime, maleMat.ncol());
-  // colnames(hold) = colnames(maleMat);
-  // 
-  // Rcpp::Rcout <<"I have male patch things" << std::endl;
-  // 
-  // int step = maleMat.ncol()-2;
-  // int whichRow, subset, duplicatedGens=2, nextStep=2+step, uniqueGens=2;
-  // 
-  // int finalStep = maleMat.ncol()-1;
-  String comma = ",";
-  String dot = ".";
-  int buffMem = 8;
-  // 
-  // 
-  // /*
-  // * aggregate females first, then use 1 loop for subsetting
-  // */
-  // NumericMatrix femaleAgg(totalTime,maleMat.ncol());
-  // femaleAgg(_,0) = maleMat(_,0);
-  // femaleAgg(_,1) = intPatches;
-  // 
-  // Rcpp::Rcout << "I made it here!" << std::endl;
-  // 
-  // //aggregate females
-  // Rcpp::Rcout << "uniqueGens: " << uniqueGens << std::endl;
-  // Rcpp::Rcout << "finalStep: " << finalStep << std::endl;
-  // Rcpp::Rcout << "step: " << step << std::endl;
-  // 
-  // 
-  // for(uniqueGens; uniqueGens<=finalStep; ++uniqueGens, nextStep+=step){
-  //   //overwrite values in hold with female values
-  //   femaleAgg(_,uniqueGens) = femaleMat(_,duplicatedGens);
-  //   //duplicatedGens++;
-  //   
-  //   //aggregate females over their mate genotypes
-  //   for(duplicatedGens++; duplicatedGens<nextStep; duplicatedGens++){
-  //     femaleAgg(_,uniqueGens) = femaleAgg(_,uniqueGens) + femaleMat(_,duplicatedGens);
-  //   }//genotype sum loop
-  //   
-  // }//end full aggregate loop
-  // 
-  // Rcpp::Rcout << "I aggregated" << std::endl;
-  // 
-  // //loop over patches
-  // for(int patch : seq(0, totalPatch-1)){
-  //   
-  //   patchName = maleFile;
-  //   whichRow = uniquePatches[patch];
-  //   new_string = std::string(5 - toString(whichRow).length(), '0') + toString(whichRow);
-  //   patchName.replace_last(".csv", "_Patch"+new_string+".csv");
-  //   
-  //   
-  //   whichRow = patch;
-  //   
-  //   //subset by patch
-  //   for(subset=0; subset<patchTime; ++subset, whichRow+=totalPatch){
-  //     hold(subset,_) = maleMat(whichRow,_);
-  //   }//end subset loop
-  //   
-  //   //write male output
-  //   fwriteMain(wrap(hold), wrap(patchName), wrap(comma), wrap(eol),
-  //              wrap(dot), wrap(buffMem));
-  //   
-  //   
-  //   //subset by patch - females
-  //   whichRow = patch;
-  //   for(subset=0; subset<patchTime; ++subset, whichRow+=totalPatch){
-  //     hold(subset,_) = femaleAgg(whichRow,_);
-  //   }//end subset loop
-  //   
-  //   //Write female output
-  //   patchName = femaleFile;
-  //   patchName.replace_last(".csv", "_Aggregate_Patch"+new_string+".csv");
+  Rcpp::Rcout << "Input file is: " << fileName << std::endl;
+  
+  Rcpp::Rcout << "file name length: " << fileName.size() << std::endl;
+  Rcpp::Rcout << "genotypes length: " << genotypes.size() << std::endl; 
+  
+  
+  
+  Rcpp::NumericMatrix testMat(simTime*numPatch, genotypes.size()+2);
+  Rcpp::CharacterVector cNames(genotypes);
+  
+  cNames.push_front("Patch");
+  cNames.push_front("Time");
+  
+  
+  colnames(testMat) = cNames;
+  
+  
+  
+  MGDReader fileReader(fileName);
+  
+  
+  
+  
+  fileReader.readFileDBL(fileName, simTime*numPatch, genotypes.size()+2, testMat);
+  
+  
+  return testMat;
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//' @export
+// [[Rcpp::export]]
+void Split_Aggregate(const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles,
+                     const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes){
+  
+  /********************
+   * setup objects for every run
+   ********************/
+  
+  // setup basic objects from input
+  IntegerVector patches = seq(0, numPatch-1);
+  int patchTime = simTime-1; // minus one because printing is 1-(end-1)
+  int step = genotypes.size();
+  int finalStep = genotypes.size() + 1;
+  
+  // setup matrix for holding/printing
+  CharacterVector cNames(genotypes);
+  cNames.push_front("Time");
+  NumericMatrix hold(patchTime, genotypes.size()+1);
+  colnames(hold) = cNames;
+  hold(_,0) = seq(1, patchTime);
+
+  // Matrices for holding data during execution
+  NumericMatrix maleMat(numPatch*patchTime, step+2);
+  NumericMatrix femaleMat(numPatch*patchTime, step*step+2);
+  NumericMatrix femaleAgg(numPatch*patchTime, step+2);
+
+  // things used later in the loops
+  Rcpp::String patchName;
+  std::string new_string;
+  int whichRow, subset, duplicatedGens, nextStep, whichCol;
+
+  
+  /********************
+   * initialize reader
+   ********************/
+  
+  MGDReader fileReader(femaleFiles[0]);
+
+  
+  /********************
+   * Loop over files and do work
+   ********************/
+  
+  for(int file=0; file<femaleFiles.size(); file++){
     
-    fwriteMain(wrap(maleMat), wrap(maleFile), wrap(comma), wrap(eol),
-               wrap(dot), wrap(buffMem));
+    // read male file
+    fileReader.readFileDBL(maleFiles[file], numPatch*patchTime, step+2, maleMat);
     
-//  }//end patch loop
+    // read female file
+    fileReader.readFileDBL(femaleFiles[file], numPatch*patchTime, step*step+2, femaleMat);
+    
+    
+    
+    
+    // aggregate females
+    duplicatedGens=2;
+    nextStep = step + 2;
+    for(whichCol=2; whichCol<=finalStep; ++whichCol, nextStep+=step){
+      
+      //overwrite values in hold with female values
+      femaleAgg(_,whichCol) = femaleMat(_,duplicatedGens);
+      
+      //aggregate females over their mate genotypes
+      for(duplicatedGens++; duplicatedGens<nextStep; duplicatedGens++){
+        femaleAgg(_,whichCol) = femaleAgg(_,whichCol) + femaleMat(_,duplicatedGens);
+      }//genotype sum loop
+      
+    }//end full aggregate loop
+    
+    
+    
+    //loop over patches
+    for(int patch : patches){
+      
+      // generate patch portion of file name
+      new_string = std::string(5 - toString(patch).length(), '0') + toString(patch);
+      
+      /********************
+       * Male Patch Subset
+       ********************/
+      
+      // generate file name
+      patchName = maleFiles[file];
+      patchName.replace_last(".csv", "_Patch"+new_string+".csv");
+      
+      //subset by patch
+      whichRow = patch;
+      for(subset=0; subset<patchTime; ++subset, whichRow+=numPatch){
+        for(whichCol=2; whichCol<finalStep; ++whichCol){
+          hold(subset,whichCol-1) = maleMat(whichRow,whichCol);
+        }
+      }//end subset loop
+      
+      
+      //write male output
+      fwriteMain(wrap(hold), wrap(patchName), wrap(","), wrap("\n"),
+                 wrap("."), wrap(8));
+      
+      
+      /********************
+       * Female Patch Subset
+       ********************/
+      
+      // female file name
+      patchName = femaleFiles[file];
+      patchName.replace_last(".csv", "_Aggregate_Patch"+new_string+".csv");
+      
+      //subset by patch
+      whichRow = patch;
+      for(subset=0; subset<patchTime; ++subset, whichRow+=numPatch){
+        for(whichCol=2; whichCol<finalStep; ++whichCol){
+          hold(subset,whichCol-1) = femaleAgg(whichRow,whichCol);
+        }
+      }//end subset loop
+      
+      // write output
+      fwriteMain(wrap(hold), wrap(patchName), wrap(","), wrap("\n"),
+                 wrap("."), wrap(8));
+      
+    }//end patch loop
+    
+  } // end loop over files
   
 }//end Split_Aggregate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //' @export

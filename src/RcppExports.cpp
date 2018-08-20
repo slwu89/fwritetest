@@ -6,17 +6,31 @@
 
 using namespace Rcpp;
 
+// testRead
+Rcpp::NumericMatrix testRead(const std::string& fileName, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_testRead(SEXP fileNameSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRead(fileName, simTime, numPatch, genotypes));
+    return rcpp_result_gen;
+END_RCPP
+}
 // Split_Aggregate
-void Split_Aggregate(String& maleFile, String& femaleFile, String eol, NumericMatrix& maleMat, NumericMatrix& femaleMat);
-RcppExport SEXP _fwritetest_Split_Aggregate(SEXP maleFileSEXP, SEXP femaleFileSEXP, SEXP eolSEXP, SEXP maleMatSEXP, SEXP femaleMatSEXP) {
+void Split_Aggregate(const std::vector<std::string>& maleFile, const std::vector<std::string>& femaleFile, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_Split_Aggregate(SEXP maleFileSEXP, SEXP femaleFileSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< String& >::type maleFile(maleFileSEXP);
-    Rcpp::traits::input_parameter< String& >::type femaleFile(femaleFileSEXP);
-    Rcpp::traits::input_parameter< String >::type eol(eolSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix& >::type maleMat(maleMatSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix& >::type femaleMat(femaleMatSEXP);
-    Split_Aggregate(maleFile, femaleFile, eol, maleMat, femaleMat);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type maleFile(maleFileSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type femaleFile(femaleFileSEXP);
+    Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
+    Split_Aggregate(maleFile, femaleFile, simTime, numPatch, genotypes);
     return R_NilValue;
 END_RCPP
 }
@@ -81,37 +95,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// timesTwo
-NumericVector timesTwo(NumericVector x);
-RcppExport SEXP _fwritetest_timesTwo(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// testRead
-void testRead(const std::string& fileName);
-RcppExport SEXP _fwritetest_testRead(SEXP fileNameSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
-    testRead(fileName);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 4},
     {"_fwritetest_Split_Aggregate", (DL_FUNC) &_fwritetest_Split_Aggregate, 5},
     {"_fwritetest_Mean_Quantiles", (DL_FUNC) &_fwritetest_Mean_Quantiles, 9},
     {"_fwritetest_rcpparma_hello_world", (DL_FUNC) &_fwritetest_rcpparma_hello_world, 0},
     {"_fwritetest_rcpparma_outerproduct", (DL_FUNC) &_fwritetest_rcpparma_outerproduct, 1},
     {"_fwritetest_rcpparma_innerproduct", (DL_FUNC) &_fwritetest_rcpparma_innerproduct, 1},
     {"_fwritetest_rcpparma_bothproducts", (DL_FUNC) &_fwritetest_rcpparma_bothproducts, 1},
-    {"_fwritetest_timesTwo", (DL_FUNC) &_fwritetest_timesTwo, 1},
-    {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 1},
     {NULL, NULL, 0}
 };
 
