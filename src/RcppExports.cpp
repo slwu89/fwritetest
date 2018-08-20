@@ -81,6 +81,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// timesTwo
+NumericVector timesTwo(NumericVector x);
+RcppExport SEXP _fwritetest_timesTwo(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRead
+void testRead(const std::string& fileName);
+RcppExport SEXP _fwritetest_testRead(SEXP fileNameSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type fileName(fileNameSEXP);
+    testRead(fileName);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_fwritetest_Split_Aggregate", (DL_FUNC) &_fwritetest_Split_Aggregate, 5},
@@ -89,6 +110,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_fwritetest_rcpparma_outerproduct", (DL_FUNC) &_fwritetest_rcpparma_outerproduct, 1},
     {"_fwritetest_rcpparma_innerproduct", (DL_FUNC) &_fwritetest_rcpparma_innerproduct, 1},
     {"_fwritetest_rcpparma_bothproducts", (DL_FUNC) &_fwritetest_rcpparma_bothproducts, 1},
+    {"_fwritetest_timesTwo", (DL_FUNC) &_fwritetest_timesTwo, 1},
+    {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 1},
     {NULL, NULL, 0}
 };
 

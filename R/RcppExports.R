@@ -27,3 +27,12 @@ rcpparma_bothproducts <- function(x) {
     .Call('_fwritetest_rcpparma_bothproducts', PACKAGE = 'fwritetest', x)
 }
 
+timesTwo <- function(x) {
+    .Call('_fwritetest_timesTwo', PACKAGE = 'fwritetest', x)
+}
+
+#' @export
+testRead <- function(fileName) {
+    invisible(.Call('_fwritetest_testRead', PACKAGE = 'fwritetest', fileName))
+}
+
