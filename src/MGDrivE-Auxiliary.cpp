@@ -87,7 +87,8 @@ Rcpp::NumericMatrix testRead(const std::string& fileName, const int& simTime, co
 
 //' @export
 // [[Rcpp::export]]
-void Split_Aggregate(const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles,
+void Split_Aggregate(const std::vector<std::string>& outputFiles,
+                     const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles,
                      const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes){
   
   /********************
@@ -113,7 +114,7 @@ void Split_Aggregate(const std::vector<std::string>& maleFiles, const std::vecto
   NumericMatrix femaleAgg(numPatch*patchTime, step+2);
 
   // things used later in the loops
-  Rcpp::String patchName;
+  std::string patchName;
   std::string new_string;
   int whichRow, subset, duplicatedGens, nextStep, whichCol;
 
@@ -168,8 +169,8 @@ void Split_Aggregate(const std::vector<std::string>& maleFiles, const std::vecto
        ********************/
       
       // generate file name
-      patchName = maleFiles[file];
-      patchName.replace_last(".csv", "_Patch"+new_string+".csv");
+      patchName = outputFiles[file];
+      patchName = patchName + "/ADM_Patch" + new_string + ".csv";
       
       //subset by patch
       whichRow = patch;
@@ -190,8 +191,8 @@ void Split_Aggregate(const std::vector<std::string>& maleFiles, const std::vecto
        ********************/
       
       // female file name
-      patchName = femaleFiles[file];
-      patchName.replace_last(".csv", "_Aggregate_Patch"+new_string+".csv");
+      patchName = outputFiles[file];
+      patchName = patchName + "/AF1_Aggregate_Patch" + new_string + ".csv";
       
       //subset by patch
       whichRow = patch;

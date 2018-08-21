@@ -7,8 +7,8 @@ testRead <- function(fileName, simTime, numPatch, genotypes) {
 }
 
 #' @export
-Split_Aggregate <- function(maleFile, femaleFile, simTime, numPatch, genotypes) {
-    invisible(.Call('_fwritetest_Split_Aggregate', PACKAGE = 'fwritetest', maleFile, femaleFile, simTime, numPatch, genotypes))
+Split_Aggregate <- function(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes) {
+    invisible(.Call('_fwritetest_Split_Aggregate', PACKAGE = 'fwritetest', outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes))
 }
 
 #' @export

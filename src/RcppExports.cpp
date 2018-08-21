@@ -21,16 +21,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // Split_Aggregate
-void Split_Aggregate(const std::vector<std::string>& maleFile, const std::vector<std::string>& femaleFile, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
-RcppExport SEXP _fwritetest_Split_Aggregate(SEXP maleFileSEXP, SEXP femaleFileSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
+void Split_Aggregate(const std::vector<std::string>& outputFiles, const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_Split_Aggregate(SEXP outputFilesSEXP, SEXP maleFilesSEXP, SEXP femaleFilesSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type maleFile(maleFileSEXP);
-    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type femaleFile(femaleFileSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type outputFiles(outputFilesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type maleFiles(maleFilesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type femaleFiles(femaleFilesSEXP);
     Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
     Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
-    Split_Aggregate(maleFile, femaleFile, simTime, numPatch, genotypes);
+    Split_Aggregate(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes);
     return R_NilValue;
 END_RCPP
 }
@@ -98,7 +99,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 4},
-    {"_fwritetest_Split_Aggregate", (DL_FUNC) &_fwritetest_Split_Aggregate, 5},
+    {"_fwritetest_Split_Aggregate", (DL_FUNC) &_fwritetest_Split_Aggregate, 6},
     {"_fwritetest_Mean_Quantiles", (DL_FUNC) &_fwritetest_Mean_Quantiles, 9},
     {"_fwritetest_rcpparma_hello_world", (DL_FUNC) &_fwritetest_rcpparma_hello_world, 0},
     {"_fwritetest_rcpparma_outerproduct", (DL_FUNC) &_fwritetest_rcpparma_outerproduct, 1},
