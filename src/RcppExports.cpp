@@ -20,9 +20,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Split_Aggregate
-void Split_Aggregate(const std::vector<std::string>& outputFiles, const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
-RcppExport SEXP _fwritetest_Split_Aggregate(SEXP outputFilesSEXP, SEXP maleFilesSEXP, SEXP femaleFilesSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
+// S_A
+void S_A(const std::vector<std::string>& outputFiles, const std::vector<std::string>& maleFiles, const std::vector<std::string>& femaleFiles, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_S_A(SEXP outputFilesSEXP, SEXP maleFilesSEXP, SEXP femaleFilesSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type outputFiles(outputFilesSEXP);
@@ -31,13 +31,32 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
     Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
-    Split_Aggregate(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes);
+    S_A(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes);
     return R_NilValue;
 END_RCPP
 }
-// Mean_Quantiles
-void Mean_Quantiles(CharacterVector& maleNames, CharacterVector& femaleNames, bool& doMean, bool& doQuant, NumericVector& quantiles, CharacterVector& colNames, String& eol, arma::Cube<arma::uword>& maleData, arma::Cube<arma::uword>& femaleData);
-RcppExport SEXP _fwritetest_Mean_Quantiles(SEXP maleNamesSEXP, SEXP femaleNamesSEXP, SEXP doMeanSEXP, SEXP doQuantSEXP, SEXP quantilesSEXP, SEXP colNamesSEXP, SEXP eolSEXP, SEXP maleDataSEXP, SEXP femaleDataSEXP) {
+// M_Q
+void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles, Rcpp::List& femaleFiles, const bool& doMean, const bool& doQuant, const std::vector<double>& quantiles, const int& numReps, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_M_Q(SEXP writeDirSEXP, SEXP maleFilesSEXP, SEXP femaleFilesSEXP, SEXP doMeanSEXP, SEXP doQuantSEXP, SEXP quantilesSEXP, SEXP numRepsSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type writeDir(writeDirSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type maleFiles(maleFilesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type femaleFiles(femaleFilesSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type doMean(doMeanSEXP);
+    Rcpp::traits::input_parameter< const bool& >::type doQuant(doQuantSEXP);
+    Rcpp::traits::input_parameter< const std::vector<double>& >::type quantiles(quantilesSEXP);
+    Rcpp::traits::input_parameter< const int& >::type numReps(numRepsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
+    Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
+    M_Q(writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes);
+    return R_NilValue;
+END_RCPP
+}
+// NEWANALYSIS
+void NEWANALYSIS(CharacterVector& maleNames, CharacterVector& femaleNames, bool& doMean, bool& doQuant, NumericVector& quantiles, CharacterVector& colNames, String& eol, arma::Cube<arma::uword>& maleData, arma::Cube<arma::uword>& femaleData);
+RcppExport SEXP _fwritetest_NEWANALYSIS(SEXP maleNamesSEXP, SEXP femaleNamesSEXP, SEXP doMeanSEXP, SEXP doQuantSEXP, SEXP quantilesSEXP, SEXP colNamesSEXP, SEXP eolSEXP, SEXP maleDataSEXP, SEXP femaleDataSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< CharacterVector& >::type maleNames(maleNamesSEXP);
@@ -49,7 +68,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< String& >::type eol(eolSEXP);
     Rcpp::traits::input_parameter< arma::Cube<arma::uword>& >::type maleData(maleDataSEXP);
     Rcpp::traits::input_parameter< arma::Cube<arma::uword>& >::type femaleData(femaleDataSEXP);
-    Mean_Quantiles(maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData);
+    NEWANALYSIS(maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData);
     return R_NilValue;
 END_RCPP
 }
@@ -99,8 +118,9 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 4},
-    {"_fwritetest_Split_Aggregate", (DL_FUNC) &_fwritetest_Split_Aggregate, 6},
-    {"_fwritetest_Mean_Quantiles", (DL_FUNC) &_fwritetest_Mean_Quantiles, 9},
+    {"_fwritetest_S_A", (DL_FUNC) &_fwritetest_S_A, 6},
+    {"_fwritetest_M_Q", (DL_FUNC) &_fwritetest_M_Q, 10},
+    {"_fwritetest_NEWANALYSIS", (DL_FUNC) &_fwritetest_NEWANALYSIS, 9},
     {"_fwritetest_rcpparma_hello_world", (DL_FUNC) &_fwritetest_rcpparma_hello_world, 0},
     {"_fwritetest_rcpparma_outerproduct", (DL_FUNC) &_fwritetest_rcpparma_outerproduct, 1},
     {"_fwritetest_rcpparma_innerproduct", (DL_FUNC) &_fwritetest_rcpparma_innerproduct, 1},

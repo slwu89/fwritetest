@@ -7,13 +7,18 @@ testRead <- function(fileName, simTime, numPatch, genotypes) {
 }
 
 #' @export
-Split_Aggregate <- function(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes) {
-    invisible(.Call('_fwritetest_Split_Aggregate', PACKAGE = 'fwritetest', outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes))
+S_A <- function(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes) {
+    invisible(.Call('_fwritetest_S_A', PACKAGE = 'fwritetest', outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotypes))
 }
 
 #' @export
-Mean_Quantiles <- function(maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData) {
-    invisible(.Call('_fwritetest_Mean_Quantiles', PACKAGE = 'fwritetest', maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData))
+M_Q <- function(writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes) {
+    invisible(.Call('_fwritetest_M_Q', PACKAGE = 'fwritetest', writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes))
+}
+
+#' @export
+NEWANALYSIS <- function(maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData) {
+    invisible(.Call('_fwritetest_NEWANALYSIS', PACKAGE = 'fwritetest', maleNames, femaleNames, doMean, doQuant, quantiles, colNames, eol, maleData, femaleData))
 }
 
 rcpparma_hello_world <- function() {

@@ -9,10 +9,23 @@ Split_Aggregate(readDir, writeDir, remFiles)
 \arguments{
 \item{readDir}{Directory of subfolders with each run inside}
 
-\item{writeDir}{Directory with same structure as readDir}
+\item{writeDir}{Directory with same structure as readDir. Default is readDir}
 
-\item{remFiles}{Boolean, remove read files and directories. Default is FALSE}
+\item{remFiles}{Boolean, remove read files. Default is FALSE}
 }
 \description{
-Splits all runs by patch, and aggregates females by mate
+Splits all runs by patch and aggregates females by mate. \cr
+File structure needs to be as shown below: \cr
+ * readDirectory
+   * repetition 1
+     * patch 1
+     * patch 2
+     * patch 3
+   * repetition 2
+     * patch 1
+     * patch 2
+     * patch 3
+   * repetition 3
+   * repetition 4
+   * ...
 }
