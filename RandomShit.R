@@ -51,7 +51,23 @@ min      lq     mean   median       uq      max neval
 
 
 
-AnalyzeQuantiles(readDirectory = "~/Desktop/HOLD/MGDrivE/", writeDirectory = "/home/jared/Desktop/HOLD/MGDrivEHOLD/",
-                 doMean = TRUE, quantiles = c(0.1, 0.5), simTime = 20, numPatch = 20,
+AnalyzeQuantiles(readDirectory = "~/Desktop/HOLD/MGDrivE/", writeDirectory = "~/Desktop/HOLD/MGDrivE (copy 1)/",
+                 doMean = TRUE, quantiles = c(0.1, 0.5), simTime = 1000, numPatch = 50,
                  genotypes = c("WW","WH","WR","WB","HH","HR","HB","RR","RB","BB"), remFiles = FALSE)
 
+
+
+newFiles <- list.files(path = "~/Desktop/HOLD/MGDrivE (copy 1)/", full.names = TRUE)
+oldFiles <- list.files(path = "~/Desktop/HOLD/MGDrivE (copy 1) (copy 1)/", full.names = TRUE)
+
+
+for(file in 1:120){
+  
+  newQuant <- as.matrix(read.csv(file = newFiles[file], header = TRUE))
+  oldQuant <- as.matrix(read.csv(file = oldFiles[file], header = TRUE))
+  
+  print(all.equal(oldQuant, newQuant))
+  
+  
+  
+}

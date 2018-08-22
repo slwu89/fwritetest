@@ -12,8 +12,8 @@ S_A <- function(outputFiles, maleFiles, femaleFiles, simTime, numPatch, genotype
 }
 
 #' @export
-M_Q <- function(writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes) {
-    invisible(.Call('_fwritetest_M_Q', PACKAGE = 'fwritetest', writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes))
+M_Q <- function(writeDir, inputFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes) {
+    invisible(.Call('_fwritetest_M_Q', PACKAGE = 'fwritetest', writeDir, inputFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes))
 }
 
 #' @export

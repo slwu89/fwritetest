@@ -36,13 +36,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // M_Q
-void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles, Rcpp::List& femaleFiles, const bool& doMean, const bool& doQuant, const std::vector<double>& quantiles, const int& numReps, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
-RcppExport SEXP _fwritetest_M_Q(SEXP writeDirSEXP, SEXP maleFilesSEXP, SEXP femaleFilesSEXP, SEXP doMeanSEXP, SEXP doQuantSEXP, SEXP quantilesSEXP, SEXP numRepsSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
+void M_Q(const std::string& writeDir, const Rcpp::ListOf<Rcpp::List>& inputFiles, const bool& doMean, const bool& doQuant, const std::vector<double>& quantiles, const int& numReps, const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes);
+RcppExport SEXP _fwritetest_M_Q(SEXP writeDirSEXP, SEXP inputFilesSEXP, SEXP doMeanSEXP, SEXP doQuantSEXP, SEXP quantilesSEXP, SEXP numRepsSEXP, SEXP simTimeSEXP, SEXP numPatchSEXP, SEXP genotypesSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type writeDir(writeDirSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type maleFiles(maleFilesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List& >::type femaleFiles(femaleFilesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::ListOf<Rcpp::List>& >::type inputFiles(inputFilesSEXP);
     Rcpp::traits::input_parameter< const bool& >::type doMean(doMeanSEXP);
     Rcpp::traits::input_parameter< const bool& >::type doQuant(doQuantSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type quantiles(quantilesSEXP);
@@ -50,7 +49,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int& >::type simTime(simTimeSEXP);
     Rcpp::traits::input_parameter< const int& >::type numPatch(numPatchSEXP);
     Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type genotypes(genotypesSEXP);
-    M_Q(writeDir, maleFiles, femaleFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes);
+    M_Q(writeDir, inputFiles, doMean, doQuant, quantiles, numReps, simTime, numPatch, genotypes);
     return R_NilValue;
 END_RCPP
 }
@@ -119,7 +118,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_fwritetest_testRead", (DL_FUNC) &_fwritetest_testRead, 4},
     {"_fwritetest_S_A", (DL_FUNC) &_fwritetest_S_A, 6},
-    {"_fwritetest_M_Q", (DL_FUNC) &_fwritetest_M_Q, 10},
+    {"_fwritetest_M_Q", (DL_FUNC) &_fwritetest_M_Q, 9},
     {"_fwritetest_NEWANALYSIS", (DL_FUNC) &_fwritetest_NEWANALYSIS, 9},
     {"_fwritetest_rcpparma_hello_world", (DL_FUNC) &_fwritetest_rcpparma_hello_world, 0},
     {"_fwritetest_rcpparma_outerproduct", (DL_FUNC) &_fwritetest_rcpparma_outerproduct, 1},

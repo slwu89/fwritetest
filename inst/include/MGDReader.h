@@ -48,7 +48,7 @@ public:
   void readFileDBL(const std::string& _file, const int& nrow, const int& ncol,
                    Rcpp::NumericMatrix& dataPlace);
   void readFileINT(const std::string& _file, const int& nrow, const int& ncol,
-                   Rcpp::IntegerMatrix& dataPlace);
+                   arma::Mat<int>& dataPlace);
   
   // auxiliary functions
   double str2dbl(const char *p); // https://tinodidriksen.com/uploads/code/cpp/speed-string-to-double.cpp
@@ -168,7 +168,7 @@ void MGDReader::readFileDBL(const std::string& _file, const int& nrow, const int
 
 // read ints from file into an already created matrix
 void MGDReader::readFileINT(const std::string& _file, const int& nrow, const int& ncol,
-                            Rcpp::IntegerMatrix& dataPlace){
+                            arma::Mat<int>& dataPlace){
   
   holdString.clear();
   

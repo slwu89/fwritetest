@@ -121,105 +121,8 @@ AnalyzeQuantiles <- function(readDirectory, writeDirectory, doMean=TRUE, quantil
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  # #generate a list of all patches to run over
-  # patchList = unique(regmatches(x = patchFiles[[1]],
-  #                               m = regexpr(pattern = "Patch[0-9]+",
-  #                                           text = patchFiles[[1]],
-  #                                           perl = TRUE)))
-  # 
-  # #read in a file initially to get variables and setup return array
-  # testFile <- data.table::fread(input = file.path(repFiles[1], patchFiles[[1]][1]),
-  #                               verbose = FALSE, showProgress = FALSE, drop = c("Time", "Patch"))
-  # 
-  # 
-  # #bunch of constants that get used several times
-  # numReps <- length(repFiles)
-  # numRow <- dim(testFile)[1]
-  # numCol <- dim(testFile)[2]
-  # columnNames <- c("Time", names(testFile))
-  # 
-  # #setup input data holder
-  # popDataMale <- array(data = 0, dim = c(numRow,  numReps, numCol))
-  # popDataFemale <- array(data = 0, dim = c(numRow, numReps, numCol))
-  # 
-  # #setup vectors and constants for use in loop
-  # vecLen <- length(c(TRUE, quantiles))
-  # maleFileVec <- femaleFileVec <- character(length = vecLen)
-  # doQuant <- !is.null(quantiles)
-  # quantFormat <- formatC(x = quantiles, digits = 4, format = "f",
-  #                        decimal.mark = "", big.mark = NULL)
-  # 
-  # eol <- if(.Platform$OS.type=="windows") "\r\n" else "\n"
-  # 
-  # 
-  # 
-  # #loop over all patches and do stats.
-  # for(patch in patchList){
-  #   
-  #   #get male and female files, all repetitions of this patch
-  #   maleFiles <- vapply(X = malePatches,
-  #                       FUN = grep, pattern = patch, fixed=TRUE, value=TRUE,
-  #                       FUN.VALUE = character(length = 1L))
-  #   
-  #   femaleFiles <- vapply(X = femalePatches,
-  #                         FUN = grep, pattern = patch, fixed=TRUE, value=TRUE,
-  #                         FUN.VALUE = character(length = 1L))
-  #   
-  #   
-  #   #Read in all repetitions for this patch
-  #   for(repetition in 1:numReps){
-  #     popDataMale[ ,repetition, ] <- as.matrix(data.table::fread(input = file.path(repFiles[repetition], maleFiles[repetition]),
-  #                                                                verbose = FALSE, showProgress = FALSE, drop = c("Time", "Patch")))
-  #     popDataFemale[ ,repetition, ] <- as.matrix(data.table::fread(input = file.path(repFiles[repetition], femaleFiles[repetition]),
-  #                                                                  verbose = FALSE, showProgress = FALSE, drop = c("Time", "Patch")))
-  #   }
-  #   
-  #   
-  #   #setup return file names. Just do them all, whether or not they get used.
-  #   maleFileVec[1] <- file.path(writeDirectory, file.path("ADM_Mean_", patch, ".csv", fsep = ""))
-  #   femaleFileVec[1] <- file.path(writeDirectory,file.path("AF1_Mean_", patch, ".csv", fsep = ""))
-  #   
-  #   if(doQuant){
-  #     maleFileVec[2:vecLen] <- file.path(writeDirectory,
-  #                                        file.path("ADM_Quantile_",
-  #                                                  quantFormat,
-  #                                                  "_", patch, ".csv", fsep = "")
-  #     )
-  #     
-  #     femaleFileVec[2:vecLen] <- file.path(writeDirectory,
-  #                                          file.path("AF1_Quantile_",
-  #                                                    quantFormat,
-  #                                                    "_", patch, ".csv", fsep = "")
-  #     )
-  #     
-  #   }
     
-    
-    
-    
-    
-    # #export rest of work to Rcpp
-    # backupMGDrivEv2::Mean_Quantiles(maleNames = maleFileVec, femaleNames = femaleFileVec,
-    #                                 doMean = doMean, doQuant = doQuant,
-    #                                 quantiles = quantiles, colNames = columnNames, eol = eol,
-    #                                 maleData = popDataMale, femaleData = popDataFemale)
-    
-    
-    
-    
-    
-    
-    #cat("Going into Cpp")
-    
-    fwritetest::M_Q(writeDir = writeDirectory, maleFiles = maleFiles,
-                    femaleFiles = femaleFiles, doMean = doMean, doQuant = doQuant, quantiles = quantiles,
+    fwritetest::M_Q(writeDir = writeDirectory, inputFiles = list(maleFiles, femaleFiles), doMean = doMean, doQuant = doQuant, quantiles = quantiles,
                     numReps = length(repFiles), simTime = simTime,
                     numPatch = numPatch, genotypes = genotypes)
     
@@ -232,7 +135,6 @@ AnalyzeQuantiles <- function(readDirectory, writeDirectory, doMean=TRUE, quantil
     }
     
     
-#  }#end loop over patches
     
     
 }#end function

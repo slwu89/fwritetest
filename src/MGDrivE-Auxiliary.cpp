@@ -225,15 +225,14 @@ void S_A(const std::vector<std::string>& outputFiles,
 
 //' @export
 // [[Rcpp::export]]
-void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles,
-         Rcpp::List& femaleFiles,
+void M_Q(const std::string& writeDir, const Rcpp::ListOf<Rcpp::List>& inputFiles,
                     const bool& doMean, const bool& doQuant, const std::vector<double>& quantiles, const int& numReps,
                     const int& simTime, const int& numPatch, const Rcpp::CharacterVector& genotypes){
+  
   
   /********************
    * setup objects for every run
    ********************/
-  
   
   // setup basic objects from input
   IntegerVector patches = seq(0, numPatch-1);
@@ -242,40 +241,24 @@ void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles,
   int numCols = genotypes.size()+1;
   
   
-  //Rcpp::Rcout << "Did basic operations" << std::endl;
-  
-  
-  
   // setup matrix for printing
   CharacterVector cNames(genotypes);
   cNames.push_front("Time");
   NumericMatrix printThing(patchTime, numCols);
   colnames(printThing) = cNames;
   printThing(_,0) = seq(1, patchTime);
-  
-  //Rcpp::Rcout << "Did printing setup" << std::endl;
+  std::vector<std::string> sexNames{"/ADM_", "/AF1_"};
   
   
   // data holders
-  arma::Cube<int> maleData(patchTime, numReps, numCols, arma::fill::zeros);
-  arma::Cube<int> femaleData(patchTime, numReps, numCols, arma::fill::zeros);
-  
-  //Rcpp::Rcout << "Did data holders" << std::endl;
-  
-  
+  arma::Cube<int> inputData(patchTime, numReps, numCols, arma::fill::zeros);
+
   
   // things used later in the loops
   arma::dvec holder(patchTime, arma::fill::zeros);
-  IntegerMatrix readHold(patchTime, numCols);
+  arma::Mat<int> readHold(patchTime, numCols);
   std::string patchName;
   std::string new_string;
-  
-  
-  
-  //Rcpp::Rcout << "Did later things" << std::endl;
-  
-  
-  
   
   
   
@@ -285,30 +268,16 @@ void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles,
   double fuzz = 4.0*std::numeric_limits<double>::epsilon(); //Set error for rounding issues
   IntegerVector numQuants;
   std::vector<std::string> quantNames(quantiles.size());
-  
-  //Rcpp::Rcout << "Did initial quant stuff" << std::endl;
-  
-  
+
   if(doQuant){
     
     numQuants = seq(0, quantiles.size()-1);
-    
-    //Rcpp::Rcout << "Did numQuants"<<std::endl;
-    
+
+    // convert quantiles to strings for naming files later
     for(int i : numQuants){
-      
-      //Rcpp::Rcout << "i: " << i << std::endl;
-      
-      //Rcpp::Rcout << "Quant as string: " << std::to_string(quantiles[i]) << std::endl;
-      
       quantNames[i] = std::to_string(quantiles[i]);
-      
-      //Rcpp::Rcout << "Quant name: " << quantNames[i] << std::endl;
     }
   }//end if
-  
-  //Rcpp::Rcout << "Did loop quant stuff" << std::endl;
-  
   
   //Things used inside quantile loop
   double nppm, h;
@@ -317,224 +286,126 @@ void M_Q(const std::string& writeDir, const Rcpp::List& maleFiles,
   IntegerVector rowSeq(seq(0, patchTime-1));
   
   
-  //Rcpp::Rcout << "Did final quant stuff" << std::endl;
-  
-  
-  
-  
   /********************
    * initialize reader
    ********************/
   
-  MGDReader fileReader(Rcpp::as<std::vector<std::string> >(femaleFiles[0])[0]);
-  
-  
-  //Rcpp::Rcout << "Did file reader" << std::endl;
-  
-  
-  
+  MGDReader fileReader(Rcpp::as<std::vector<std::string> >(inputFiles[0][0])[0]);
   
   
   /********************
-   * Loop over patches and do work
+   * Actual work begins with this loop
    ********************/
-  
-  for(int patch : patches){
     
-    
-    //Rcpp::Rcout << "Patch: " << patch << std::endl;
-    
-    
-    // generate patch portion of file name
-    new_string = std::string(4 - toString(patch).length(), '0') + toString(patch);
-    
-    // read in Data
-    for(int whichRep=0; whichRep<numReps; whichRep++){
+  // loop over list of lists for input file. This does all male/female files
+  for(int sex : {0,1}){
       
-      
-      //Rcpp::Rcout << "Rep: " << whichRep << std::endl;
-      //Rcpp::Rcout << "PatchTime: " << patchTime << std::endl;
-      
-      
-      
-      
-      // male
-      fileReader.readFileINT(Rcpp::as<std::vector<std::string> >(maleFiles[whichRep])[patch], patchTime, numCols, readHold);
-      maleData.tube(0,whichRep,patchTime-1,whichRep) = Rcpp::as<arma::Mat<int> >(readHold);  
-      //Rcpp::Rcout << "Did male properly" << std::endl;
-      
-      // female
-      fileReader.readFileINT(Rcpp::as<std::vector<std::string> >(femaleFiles[whichRep])[patch], patchTime, numCols, readHold);
-      femaleData.tube(0,whichRep,patchTime-1,whichRep) = Rcpp::as<arma::Mat<int> >(readHold);
-      
-      //Rcpp::Rcout << "Did female properly" << std::endl;
-    }
-    
-    
-    //Rcpp::Rcout << "Read in data" << std::endl;
-    
-    
-    
-    
-    
-    
     /********************
-     * Mean
+     * Loop over patches and do work
      ********************/
     
-    if(doMean){
-      //Loop over slices - male stuff
-      for(int slice : sliceSeq){
+    for(int patch : patches){
+      
+      // generate patch portion of file name
+      new_string = std::string(4 - toString(patch).length(), '0') + toString(patch);
+      
+      // read in Data
+      for(int whichRep=0; whichRep<numReps; whichRep++){
         
-        //Rcpp::Rcout << "male slice:" << slice << std::endl;
-        
-        
-        
-        //get slice, do row means
-        holder = arma::conv_to< arma::dvec >::from(arma::mean(maleData.slice(slice), 1));
-        //put row means into print matrix
-        printThing(_,slice) = NumericVector(holder.begin(), holder.end());
+        fileReader.readFileINT(Rcpp::as<std::vector<std::string> >(inputFiles[sex][whichRep])[patch],
+                               patchTime, numCols, readHold);
+        inputData.tube(0,whichRep,patchTime-1,whichRep) = readHold;  
+              
       }
       
-      //Rcpp::Rcout << "Did male mean" << std::endl;
       
-      // generate file name
-      patchName = writeDir;
-      patchName += "/ADM_Mean_Patch" + new_string + ".csv";
+      /********************
+       * Mean
+       ********************/
       
-      //Print male output!
-      fwriteMain(wrap(printThing), wrap(patchName),
-                 wrap(","), wrap("\n"), wrap("."), wrap(8));
-      
-      //Rcpp::Rcout << "Did male print" << std::endl;
-      
-      
-      //Loop over slices - female stuff
-      for(int slice : sliceSeq){
-        //get slice, do row means
-        holder = arma::conv_to< arma::dvec >::from(arma::mean(femaleData.slice(slice), 1));
-        //put row means into print matrix
-        printThing(_,slice) = NumericVector(holder.begin(), holder.end());
-      }
-      
-      //Rcpp::Rcout << "Did female mean" << std::endl;
-      
-      
-      // generate file name
-      patchName = writeDir;
-      patchName += "/AF1_Mean_Patch" + new_string + ".csv";
-      
-      //Print female output
-      fwriteMain(wrap(printThing), wrap(patchName),
-                 wrap(","), wrap("\n"), wrap("."), wrap(8));
-      
-      //Rcpp::Rcout << "Did female print" << std::endl;
-      
-      
-    }//end mean
-    
-    
-    
-    /********************
-     * quantiles
-     ********************/
-    
-    if(doQuant){
-      
-      
-      //Rcpp::Rcout << "Doing Quantiles" << std::endl;
-      
-      //loop over quantiles to calculate
-      for(int whichQuant : numQuants ){
-        
-        //Rcpp::Rcout << "whichQuant: " << whichQuant << std::endl;
-        //Rcpp::Rcout << "quantiles: "<< quantiles[whichQuant] << std::endl;
-        
-        //1/3 and 2/3 are to match algorithm 8 in the rstats quantile function
-        //Not really sure what else is happening. I took this from R quantile function
-        nppm = 1.0/3.0 + quantiles[whichQuant]*(numReps + 1.0/3.0);
-        h = nppm + fuzz;
-        j = int(h);
-        h = nppm - j;
-        
-        //Safety to set small values of h to 0. This does not handle negative values
-        // like the r quantile does.
-        if(h<fuzz) h = 0;
-        
-        
-        //loop over slices - do males
+      if(doMean){
+        //Loop over slices - male stuff
         for(int slice : sliceSeq){
-          //Loop over rows, calculate quantiles in each row
-          for(int currentRow : rowSeq){
-            
-            //subset matrix. I use several times
-            holder = arma::conv_to< arma::dvec >::from(maleData.slice(slice).row(currentRow));
-            holdRow = NumericVector(holder.begin(), holder.end());
-            
-            //sort vector
-            std::sort(holdRow.begin(), holdRow.end());
-            
-            //Set vector with row, and an extra min/max. This is part of the formula,
-            // It has been adapted here to avoid extra copies from push_front/bach
-            test[0]=holdRow[0];
-            test[seq(1,numReps)] = holdRow;
-            test[numReps+1]=holdRow[numReps-1];
-            
-            //calculate quantiles. Also not sure why or how this works.
-            printThing(currentRow,slice) = (1-h)*test[j] + h*test[j+1];
-            
-          }//end loop over rows
-        }// end loop over slice
+          
+          //get slice, do row means
+          // awful conversion. for some reason, providing ints to mean returns an integer result. wtf?
+          holder = arma::conv_to< arma::dvec >::from(arma::mean(arma::conv_to< arma::Mat<double> >
+                                                                  ::from(inputData.slice(slice)), 1));
+          //put row means into print matrix
+          printThing(_,slice) = NumericVector(holder.begin(), holder.end());
+        }
         
         // generate file name
-        patchName = writeDir;
-        patchName += "/ADM_Quantile_" + quantNames[whichQuant] + "_Patch_"+new_string + ".csv";
+        patchName = writeDir + sexNames[sex] + "Mean_Patch" + new_string + ".csv";
         
-        //Print out male stuff
+        //Print male output!
         fwriteMain(wrap(printThing), wrap(patchName),
                    wrap(","), wrap("\n"), wrap("."), wrap(8));
         
+      }//end mean
+      
+      
+      
+      /********************
+       * quantiles
+       ********************/
+      
+      if(doQuant){
         
-        //loop over slices - do females
-        for(int slice : sliceSeq){
-          //Loop over rows, calculate quantiles in each row
-          for(int currentRow : rowSeq){
-            
-            //subset matrix. I use several times
-            holder = arma::conv_to< arma::dvec >::from(femaleData.slice(slice).row(currentRow));
-            holdRow = NumericVector(holder.begin(), holder.end());
-            
-            //sort vector
-            std::sort(holdRow.begin(), holdRow.end());
-            
-            //Set vector with row, and an extra min/max. This is part of the formula,
-            // It has been adapted here to avoid extra copies from push_front/bach
-            test[0]=holdRow[0];
-            test[seq(1,numReps)] = holdRow;
-            test[numReps+1]=holdRow[numReps-1];
-            
-            //calculate quantiles. Also not sure why or how this works.
-            printThing(currentRow,slice) = (1-h)*test[j] + h*test[j+1];
-            
-          }//end loop over rows
-        }// end loop over slice
+        //loop over quantiles to calculate
+        for(int whichQuant : numQuants ){
+          
+          //1/3 and 2/3 are to match algorithm 8 in the rstats quantile function
+          //Not really sure what else is happening. I took this from R quantile function
+          nppm = 1.0/3.0 + quantiles[whichQuant]*(numReps + 1.0/3.0);
+          h = nppm + fuzz;
+          j = int(h);
+          h = nppm - j;
+          
+          //Safety to set small values of h to 0. This does not handle negative values
+          // like the r quantile does.
+          if(h<fuzz) h = 0;
+          
+          
+          //loop over slices - do males
+          for(int slice : sliceSeq){
+            //Loop over rows, calculate quantiles in each row
+            for(int currentRow : rowSeq){
+              
+              //subset matrix. I use several times
+              holdRow = IntegerVector(inputData.slice(slice).row(currentRow).begin(),
+                                      inputData.slice(slice).row(currentRow).end());
+              
+              //sort vector
+              std::sort(holdRow.begin(), holdRow.end());
+              
+              //Set vector with row, and an extra min/max. This is part of the formula,
+              // It has been adapted here to avoid extra copies from push_front/bach
+              test[0]=holdRow[0];
+              test[seq(1,numReps)] = holdRow;
+              test[numReps+1]=holdRow[numReps-1];
+              
+              //calculate quantiles. Also not sure why or how this works.
+              printThing(currentRow,slice) = (1-h)*test[j] + h*test[j+1];
+              
+            }//end loop over rows
+          }// end loop over slice
+          
+          // generate file name
+          patchName = writeDir + sexNames[sex] + "Quantile_" + quantNames[whichQuant]
+                                                      + "_Patch_"+new_string + ".csv";
+          
+          //Print out male stuff
+          fwriteMain(wrap(printThing), wrap(patchName),
+                     wrap(","), wrap("\n"), wrap("."), wrap(8));
+          
+        }//end loop over quantiles
         
-        // generate file name
-        patchName = writeDir;
-        patchName += "/AF1_Quantile_" + quantNames[whichQuant] + "_Patch_"+new_string + ".csv";
-        
-        //Print out female stuff
-        fwriteMain(wrap(printThing), wrap(patchName),
-                   wrap(","), wrap("\n"), wrap("."), wrap(8));
-        
-      }//end loop over quantiles
-    }//end quantiles chunk
+      }//end quantiles chunk
+      
+    }//end patch loop
     
-  }//end patch loop
-  
-  
-  
-  
+  }//loop over male/female sublist
   
 }//end analysis function
 
