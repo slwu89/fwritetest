@@ -35,7 +35,7 @@
 #' @param remFiles Boolean, remove read files. Default is FALSE
 #'
 #' @export
-Split_Aggregate_MGDrivE <- function(readDir, writeDir=readDir, simTime, numPatch,
+SplitAggregateCpp <- function(readDir, writeDir=readDir, simTime, numPatch,
                             genotypes, remFiles=FALSE){
   
   # list all files to be worked on and where to write
@@ -90,7 +90,7 @@ Split_Aggregate_MGDrivE <- function(readDir, writeDir=readDir, simTime, numPatch
 #'
 #' @return Writes output to files in writeDirectory
 #' @export
-AnalyzeQuantiles <- function(readDirectory, writeDirectory, doMean=TRUE, quantiles=NULL,
+AnalyzeQuantilesCpp <- function(readDirectory, writeDirectory, doMean=TRUE, quantiles=NULL,
                              simTime, numPatch, genotypes, remFiles=FALSE){
   
   #safety check
@@ -118,24 +118,17 @@ AnalyzeQuantiles <- function(readDirectory, writeDirectory, doMean=TRUE, quantil
   femaleFiles <- lapply(X = repFiles, FUN = list.files, pattern = "AF1",
                         full.names = TRUE)
   
+  # pass down to cpp
+  fwritetest::M_Q(writeDir = writeDirectory, inputFiles = list(maleFiles, femaleFiles),
+                  doMean = doMean, doQuant = doQuant, quantiles = quantiles,
+                  numReps = length(repFiles), simTime = simTime,
+                  numPatch = numPatch, genotypes = genotypes)
   
   
-  
-    
-    fwritetest::M_Q(writeDir = writeDirectory, inputFiles = list(maleFiles, femaleFiles), doMean = doMean, doQuant = doQuant, quantiles = quantiles,
-                    numReps = length(repFiles), simTime = simTime,
-                    numPatch = numPatch, genotypes = genotypes)
-    
-    
-    # remove files
-    if(remFiles){
-      # unlink(x = list.dirs(path = readDir, full.names = TRUE, recursive = FALSE),
-      #        recursive = TRUE, force = TRUE)
-      invisible(file.remove(femaleFiles, maleFiles))
-    }
-    
-    
-    
+  # remove files
+  if(remFiles){
+    unlink(x = repFiles, recursive = TRUE, force = TRUE)
+  }
     
 }#end function
 

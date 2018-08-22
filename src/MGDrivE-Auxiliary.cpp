@@ -296,7 +296,7 @@ void M_Q(const std::string& writeDir, const Rcpp::ListOf<Rcpp::List>& inputFiles
   /********************
    * Actual work begins with this loop
    ********************/
-    
+  
   // loop over list of lists for input file. This does all male/female files
   for(int sex : {0,1}){
       
@@ -324,7 +324,7 @@ void M_Q(const std::string& writeDir, const Rcpp::ListOf<Rcpp::List>& inputFiles
        ********************/
       
       if(doMean){
-        //Loop over slices - male stuff
+        //Loop over slices
         for(int slice : sliceSeq){
           
           //get slice, do row means
@@ -333,7 +333,8 @@ void M_Q(const std::string& writeDir, const Rcpp::ListOf<Rcpp::List>& inputFiles
                                                                   ::from(inputData.slice(slice)), 1));
           //put row means into print matrix
           printThing(_,slice) = NumericVector(holder.begin(), holder.end());
-        }
+          
+        }//end loop over slices
         
         // generate file name
         patchName = writeDir + sexNames[sex] + "Mean_Patch" + new_string + ".csv";
